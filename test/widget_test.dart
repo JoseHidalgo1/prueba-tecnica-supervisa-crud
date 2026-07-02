@@ -8,13 +8,14 @@ import 'package:supervisa_task_manager/main.dart';
 import 'package:supervisa_task_manager/providers/task_provider.dart';
 
 void main() {
-  setUp(() async {
-    Hive.init('test_dir');
+  setUpAll(() async {
+    Hive.init('test_widget_hive');
     HiveService.registerAdapters();
   });
 
-  tearDown(() async {
-    await Hive.deleteFromDisk();
+  setUp(() async {
+    await HiveService.instance.clear();
+    HiveService.instance.resetForTesting();
   });
 
   testWidgets('App renders task list screen', (WidgetTester tester) async {
