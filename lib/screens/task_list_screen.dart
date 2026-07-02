@@ -56,7 +56,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
     return Column(
       children: [
-        if (provider.hasActiveFilters || provider.hasTasks)
+        if (provider.hasActiveFilters)
           _FilterBanner(provider: provider),
         Expanded(
           child: provider.hasTasks
