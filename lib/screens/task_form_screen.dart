@@ -144,10 +144,14 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   }
 
   Future<void> _pickDate() async {
+    final today = DateTime.now();
+    final firstDate = DateTime(today.year, today.month, today.day);
+    final initialDate = _dueDate.isBefore(firstDate) ? firstDate : _dueDate;
+
     final picked = await showDatePicker(
       context: context,
-      initialDate: _dueDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime(2100),
     );
     if (picked != null && mounted) {
@@ -157,6 +161,21 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final today = DateTime.now();
+    final selected = DateTime(_dueDate.year, _dueDate.month, _dueDate.day);
+    final current = DateTime(today.year, today.month, today.day);
+
+    if (selected.isBefore(current)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('La fecha no puede ser anterior al día de hoy.'),
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() => _saving = true);
 

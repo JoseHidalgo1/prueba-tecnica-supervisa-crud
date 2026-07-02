@@ -44,18 +44,26 @@ class TaskCard extends StatelessWidget {
               ),
             const SizedBox(height: 4),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _PriorityChip(priority: task.priority, colors: colors),
-                const SizedBox(width: 8),
-                Chip(
-                  label: Text(task.status.label),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  DateFormat.yMMMd('es').format(task.dueDate),
-                  style: theme.textTheme.bodySmall,
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      _PriorityChip(priority: task.priority, colors: colors),
+                      Chip(
+                        label: Text(task.status.label),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      Text(
+                        DateFormat.yMMMd('es').format(task.dueDate),
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
