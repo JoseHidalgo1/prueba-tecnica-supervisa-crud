@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
@@ -13,20 +14,31 @@ class DatabaseService {
   Database? _database;
 
   Future<Database> get database async {
+    debugPrint('[DB] database getter called, _database=${_database != null}');
     if (_database != null) return _database!;
     _database = await _openDatabase();
+    debugPrint('[DB] database getter returning, _database=${_database != null}');
     return _database!;
   }
 
   Future<Database> _openDatabase() async {
-    final path = p.join(await getDatabasesPath(), _databaseName);
+    final databasesPath = await getDatabasesPath();
+    final path = p.join(databasesPath, _databaseName);
+    debugPrint('[DB] _openDatabase() path=$path');
 
-    return openDatabase(
-      path,
-      version: _databaseVersion,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
+    try {
+      final db = await openDatabase(
+        path,
+        version: _databaseVersion,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+      );
+      debugPrint('[DB] openDatabase() SUCCEEDED');
+      return db;
+    } catch (e, stack) {
+      debugPrint('[DB] openDatabase() FAILED: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {

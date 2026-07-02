@@ -33,33 +33,55 @@ class TaskProvider extends ChangeNotifier {
       _priorityFilter != null || _statusFilter != null;
 
   Future<void> loadTasks() async {
+    debugPrint('[PROVIDER loadTasks] START');
     _isLoading = true;
     notifyListeners();
+    debugPrint('[PROVIDER loadTasks] isLoading=true, notified');
 
     try {
       _allTasks = await _repository.getAll();
+      debugPrint('[PROVIDER loadTasks] _repository.getAll() returned ${_allTasks.length} tasks');
+    } catch (e, stack) {
+      debugPrint('[PROVIDER loadTasks] ERROR: $e\n$stack');
     } finally {
       _isLoading = false;
       notifyListeners();
+      debugPrint('[PROVIDER loadTasks] END isLoading=false');
     }
   }
 
   Future<void> addTask(Task task) async {
-    final trimmed = task.copyWith(title: task.title.trim());
-    _validate(trimmed);
+    debugPrint('[PROVIDER addTask] START — title="${task.title}"');
 
+    final trimmed = task.copyWith(title: task.title.trim());
+    debugPrint('[PROVIDER addTask] trimmed title="${trimmed.title}"');
+
+    _validate(trimmed);
+    debugPrint('[PROVIDER addTask] _validate() OK');
+
+    debugPrint('[PROVIDER addTask] checking existsTitle...');
     final exists = await _repository.existsTitle(trimmed.title);
+    debugPrint('[PROVIDER addTask] existsTitle result=$exists');
     if (exists) {
+      debugPrint('[PROVIDER addTask] title already exists — throwing');
       throw const ValidationException('Ya existe una tarea con ese título.');
     }
 
     try {
-      await _repository.insert(trimmed);
-    } on DatabaseException {
+      debugPrint('[PROVIDER addTask] calling _repository.insert()...');
+      final id = await _repository.insert(trimmed);
+      debugPrint('[PROVIDER addTask] _repository.insert() returned id=$id');
+    } on DatabaseException catch (e) {
+      debugPrint('[PROVIDER addTask] DatabaseException caught: $e');
       throw const ValidationException('Ya existe una tarea con ese título.');
+    } catch (e, stack) {
+      debugPrint('[PROVIDER addTask] UNEXPECTED error during insert: $e\n$stack');
+      rethrow;
     }
 
+    debugPrint('[PROVIDER addTask] calling loadTasks()...');
     await loadTasks();
+    debugPrint('[PROVIDER addTask] loadTasks() completed');
   }
 
   Future<void> updateTask(Task task) async {
