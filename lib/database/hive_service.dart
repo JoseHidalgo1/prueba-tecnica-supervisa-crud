@@ -31,6 +31,8 @@ class HiveService {
     await b.clear();
   }
 
+  static Future<void> deleteBox() => Hive.deleteBoxFromDisk(_boxName);
+
   void resetForTesting() {
     _box = null;
   }

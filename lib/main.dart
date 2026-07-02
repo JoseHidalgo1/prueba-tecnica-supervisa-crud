@@ -9,10 +9,18 @@ import 'package:supervisa_task_manager/screens/task_list_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  HiveService.registerAdapters();
-  await HiveService.instance.box;
-  await initializeDateFormatting('es');
+  try {
+    await Hive.initFlutter();
+    HiveService.registerAdapters();
+    await HiveService.instance.box;
+    await initializeDateFormatting('es');
+  } catch (e, s) {
+    debugPrint('Error al inicializar: $e\n$s');
+    debugPrint('Corrupting Hive box detected. Deleting and retrying...');
+    await Hive.deleteBoxFromDisk('tasks');
+    HiveService.instance.resetForTesting();
+    await HiveService.instance.box;
+  }
   runApp(
     ChangeNotifierProvider(
       create: (_) => TaskProvider(),

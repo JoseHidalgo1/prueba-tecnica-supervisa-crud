@@ -30,7 +30,7 @@ class TaskAdapter extends TypeAdapter<Task> {
     writer.write(obj.title);
     writer.write(obj.description);
     writer.write(obj.dueDate);
-    writer.writeByte(obj.priority.index);
-    writer.writeByte(obj.status.index);
+    writer.write(obj.priority.index);
+    writer.write(obj.status.index);
   }
 }
