@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:supervisa_task_manager/providers/task_provider.dart';
+import 'package:supervisa_task_manager/screens/task_list_screen.dart';
 
 void main() {
-  runApp(const SupervisaApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => TaskProvider(),
+      child: const SupervisaApp(),
+    ),
+  );
 }
 
 class SupervisaApp extends StatelessWidget {
@@ -16,19 +25,7 @@ class SupervisaApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Tareas')),
-      body: const Center(child: Text('Bienvenido')),
+      home: const TaskListScreen(),
     );
   }
 }
