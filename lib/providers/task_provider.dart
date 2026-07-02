@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'package:supervisa_task_manager/models/task.dart';
 import 'package:supervisa_task_manager/repositories/task_repository.dart';
@@ -53,12 +52,7 @@ class TaskProvider extends ChangeNotifier {
       throw const ValidationException('Ya existe una tarea con ese título.');
     }
 
-    try {
-      await _repository.insert(trimmed);
-    } on DatabaseException {
-      throw const ValidationException('Ya existe una tarea con ese título.');
-    }
-
+    await _repository.insert(trimmed);
     await loadTasks();
   }
 
@@ -72,14 +66,10 @@ class TaskProvider extends ChangeNotifier {
       throw const ValidationException('Ya existe una tarea con ese título.');
     }
 
-    try {
-      final affected = await _repository.update(trimmed);
-      if (affected == 0) {
-        throw const ValidationException(
-            'No se encontró la tarea a actualizar.');
-      }
-    } on DatabaseException {
-      throw const ValidationException('Ya existe una tarea con ese título.');
+    final affected = await _repository.update(trimmed);
+    if (affected == 0) {
+      throw const ValidationException(
+          'No se encontró la tarea a actualizar.');
     }
 
     await loadTasks();
