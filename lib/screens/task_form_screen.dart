@@ -110,7 +110,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                 border: OutlineInputBorder(),
               ),
               items: TaskPriority.values.map((p) {
-                return DropdownMenuItem(value: p, child: Text(p.name));
+                return DropdownMenuItem(value: p, child: Text(p.label));
               }).toList(),
               onChanged: (value) {
                 if (value != null) setState(() => _priority = value);
@@ -125,7 +125,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: TaskStatus.values.map((s) {
-                  return DropdownMenuItem(value: s, child: Text(s.name));
+                  return DropdownMenuItem(value: s, child: Text(s.label));
                 }).toList(),
                 onChanged: (value) {
                   if (value != null) setState(() => _status = value);

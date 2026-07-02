@@ -1,6 +1,36 @@
-enum TaskPriority { alta, media, baja }
+enum TaskPriority {
+  alta,
+  media,
+  baja;
 
-enum TaskStatus { pendiente, enProgreso, completada }
+  String get label {
+    switch (this) {
+      case TaskPriority.alta:
+        return 'Alta';
+      case TaskPriority.media:
+        return 'Media';
+      case TaskPriority.baja:
+        return 'Baja';
+    }
+  }
+}
+
+enum TaskStatus {
+  pendiente,
+  enProgreso,
+  completada;
+
+  String get label {
+    switch (this) {
+      case TaskStatus.pendiente:
+        return 'Pendiente';
+      case TaskStatus.enProgreso:
+        return 'En progreso';
+      case TaskStatus.completada:
+        return 'Completada';
+    }
+  }
+}
 
 class Task {
   final int? id;
