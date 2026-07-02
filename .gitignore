@@ -33,6 +33,11 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Hive CE test storage
+test_*_hive/
+test_hive*/
+test_provider_dir/
+
 # Symbolication related
 app.*.symbols
 

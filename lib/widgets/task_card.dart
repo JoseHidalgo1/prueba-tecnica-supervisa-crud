@@ -48,7 +48,7 @@ class TaskCard extends StatelessWidget {
                 _PriorityChip(priority: task.priority, colors: colors),
                 const SizedBox(width: 8),
                 Chip(
-                  label: Text(task.status.name),
+                  label: Text(task.status.label),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -90,7 +90,7 @@ class _PriorityChip extends StatelessWidget {
         size: 16,
         color: _color,
       ),
-      label: Text(priority.name),
+      label: Text(priority.label),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.compact,
     );

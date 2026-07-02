@@ -110,7 +110,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                 border: OutlineInputBorder(),
               ),
               items: TaskPriority.values.map((p) {
-                return DropdownMenuItem(value: p, child: Text(p.name));
+                return DropdownMenuItem(value: p, child: Text(p.label));
               }).toList(),
               onChanged: (value) {
                 if (value != null) setState(() => _priority = value);
@@ -125,7 +125,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: TaskStatus.values.map((s) {
-                  return DropdownMenuItem(value: s, child: Text(s.name));
+                  return DropdownMenuItem(value: s, child: Text(s.label));
                 }).toList(),
                 onChanged: (value) {
                   if (value != null) setState(() => _status = value);
@@ -156,16 +156,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   }
 
   Future<void> _save() async {
-    debugPrint('[STEP 1] _save() called, mounted=$mounted');
-
-    if (!_formKey.currentState!.validate()) {
-      debugPrint('[STEP 2] validate() returned FALSE — aborting');
-      return;
-    }
-    debugPrint('[STEP 2] validate() returned TRUE');
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _saving = true);
-    debugPrint('[STEP 3] _saving = true');
 
     final task = Task(
       id: widget.task?.id,
@@ -175,43 +168,23 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       priority: _priority,
       status: _status,
     );
-    debugPrint('[STEP 4] Task object created: $task');
 
     try {
       final provider = context.read<TaskProvider>();
-      debugPrint('[STEP 5] provider obtained from context');
-
       if (widget.isEditing) {
-        debugPrint('[STEP 6] calling provider.updateTask()');
         await provider.updateTask(task);
       } else {
-        debugPrint('[STEP 6] calling provider.addTask()');
         await provider.addTask(task);
       }
-      debugPrint('[STEP 7] provider.addTask/updateTask completed');
 
-      if (mounted) {
-        debugPrint('[STEP 8] popping with result=true');
-        Navigator.pop(context, true);
-      } else {
-        debugPrint('[STEP 8] not mounted, cannot pop');
-      }
+      if (mounted) Navigator.pop(context, true);
     } on ValidationException catch (e) {
-      debugPrint('[CATCH ValidationException] ${e.message}');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message)),
         );
       }
-    } catch (e, stack) {
-      debugPrint('[CATCH UNEXPECTED] $e\n$stack');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error inesperado: $e')),
-        );
-      }
     } finally {
-      debugPrint('[FINALLY] _saving = false');
       if (mounted) setState(() => _saving = false);
     }
   }

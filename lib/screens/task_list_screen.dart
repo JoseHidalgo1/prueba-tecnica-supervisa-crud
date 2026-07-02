@@ -178,10 +178,10 @@ class _FilterBanner extends StatelessWidget {
     final parts = <String>[];
 
     if (provider.priorityFilter != null) {
-      parts.add('Prioridad: ${provider.priorityFilter!.name}');
+      parts.add('Prioridad: ${provider.priorityFilter!.label}');
     }
     if (provider.statusFilter != null) {
-      parts.add('Estado: ${provider.statusFilter!.name}');
+      parts.add('Estado: ${provider.statusFilter!.label}');
     }
 
     return Container(
@@ -232,7 +232,7 @@ class _FilterSheet extends StatelessWidget {
                 onSelected: (_) => onPriorityChanged(null),
               ),
               ...TaskPriority.values.map((p) => FilterChip(
-                    label: Text(p.name),
+                    label: Text(p.label),
                     selected: priorityFilter == p,
                     onSelected: (_) => onPriorityChanged(p),
                   )),
@@ -250,7 +250,7 @@ class _FilterSheet extends StatelessWidget {
                 onSelected: (_) => onStatusChanged(null),
               ),
               ...TaskStatus.values.map((s) => FilterChip(
-                    label: Text(s.name),
+                    label: Text(s.label),
                     selected: statusFilter == s,
                     onSelected: (_) => onStatusChanged(s),
                   )),
