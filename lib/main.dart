@@ -20,6 +20,7 @@ Future<void> main() async {
     await Hive.deleteBoxFromDisk('tasks');
     HiveService.instance.resetForTesting();
     await HiveService.instance.box;
+    await initializeDateFormatting('es');
   }
   runApp(
     ChangeNotifierProvider(
