@@ -29,6 +29,8 @@ class TaskProvider extends ChangeNotifier {
   TaskStatus? get statusFilter => _statusFilter;
   bool get isLoading => _isLoading;
   bool get hasTasks => tasks.isNotEmpty;
+  bool get hasActiveFilters =>
+      _priorityFilter != null || _statusFilter != null;
 
   Future<void> loadTasks() async {
     _isLoading = true;

@@ -28,7 +28,19 @@ class _TaskListScreenState extends State<TaskListScreen> {
     final provider = context.watch<TaskProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tareas')),
+      appBar: AppBar(
+        title: const Text('Tareas'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              provider.hasActiveFilters
+                  ? Icons.filter_alt_off
+                  : Icons.filter_alt,
+            ),
+            onPressed: () => _showFilterSheet(context),
+          ),
+        ],
+      ),
       body: _buildBody(provider),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToForm(context),
@@ -42,21 +54,51 @@ class _TaskListScreenState extends State<TaskListScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (!provider.hasTasks) {
-      return const Center(child: Text('No hay tareas pendientes'));
-    }
+    return Column(
+      children: [
+        if (provider.hasActiveFilters || provider.hasTasks)
+          _FilterBanner(provider: provider),
+        Expanded(
+          child: provider.hasTasks
+              ? RefreshIndicator(
+                  onRefresh: () => provider.loadTasks(),
+                  child: ListView.builder(
+                    itemCount: provider.tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = provider.tasks[index];
+                      return TaskCard(
+                        task: task,
+                        onTap: () => _navigateToEdit(context, task),
+                        onDelete: () => _confirmDelete(context, task),
+                      );
+                    },
+                  ),
+                )
+              : const Center(child: Text('No hay tareas pendientes')),
+        ),
+      ],
+    );
+  }
 
-    return RefreshIndicator(
-      onRefresh: () => provider.loadTasks(),
-      child: ListView.builder(
-        itemCount: provider.tasks.length,
-        itemBuilder: (context, index) {
-          final task = provider.tasks[index];
-          return TaskCard(
-            task: task,
-            onTap: () => _navigateToEdit(context, task),
-            onDelete: () => _confirmDelete(context, task),
-          );
+  void _showFilterSheet(BuildContext context) {
+    final provider = context.read<TaskProvider>();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _FilterSheet(
+        priorityFilter: provider.priorityFilter,
+        statusFilter: provider.statusFilter,
+        onPriorityChanged: (priority) {
+          provider.setPriorityFilter(priority);
+          Navigator.pop(context);
+        },
+        onStatusChanged: (status) {
+          provider.setStatusFilter(status);
+          Navigator.pop(context);
+        },
+        onClear: () {
+          provider.clearFilters();
+          Navigator.pop(context);
         },
       ),
     );
@@ -122,5 +164,109 @@ class _TaskListScreenState extends State<TaskListScreen> {
         const SnackBar(content: Text('Tarea actualizada')),
       );
     }
+  }
+}
+
+class _FilterBanner extends StatelessWidget {
+  const _FilterBanner({required this.provider});
+
+  final TaskProvider provider;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final parts = <String>[];
+
+    if (provider.priorityFilter != null) {
+      parts.add('Prioridad: ${provider.priorityFilter!.name}');
+    }
+    if (provider.statusFilter != null) {
+      parts.add('Estado: ${provider.statusFilter!.name}');
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Text(
+        parts.isNotEmpty ? parts.join(' • ') : 'Mostrando todas las tareas',
+        style: theme.textTheme.bodySmall,
+      ),
+    );
+  }
+}
+
+class _FilterSheet extends StatelessWidget {
+  const _FilterSheet({
+    required this.priorityFilter,
+    required this.statusFilter,
+    required this.onPriorityChanged,
+    required this.onStatusChanged,
+    required this.onClear,
+  });
+
+  final TaskPriority? priorityFilter;
+  final TaskStatus? statusFilter;
+  final ValueChanged<TaskPriority?> onPriorityChanged;
+  final ValueChanged<TaskStatus?> onStatusChanged;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Filtrar por prioridad', style: theme.textTheme.titleSmall),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              FilterChip(
+                label: const Text('Todas'),
+                selected: priorityFilter == null,
+                onSelected: (_) => onPriorityChanged(null),
+              ),
+              ...TaskPriority.values.map((p) => FilterChip(
+                    label: Text(p.name),
+                    selected: priorityFilter == p,
+                    onSelected: (_) => onPriorityChanged(p),
+                  )),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text('Filtrar por estado', style: theme.textTheme.titleSmall),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              FilterChip(
+                label: const Text('Todas'),
+                selected: statusFilter == null,
+                onSelected: (_) => onStatusChanged(null),
+              ),
+              ...TaskStatus.values.map((s) => FilterChip(
+                    label: Text(s.name),
+                    selected: statusFilter == s,
+                    onSelected: (_) => onStatusChanged(s),
+                  )),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: onClear,
+              child: const Text('Limpiar filtros'),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
   }
 }
