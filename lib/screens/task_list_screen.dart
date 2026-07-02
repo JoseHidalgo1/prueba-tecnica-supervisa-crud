@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:supervisa_task_manager/models/task.dart';
 import 'package:supervisa_task_manager/providers/task_provider.dart';
+import 'package:supervisa_task_manager/screens/task_form_screen.dart';
 import 'package:supervisa_task_manager/widgets/task_card.dart';
 
 class TaskListScreen extends StatefulWidget {
@@ -95,11 +96,31 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  void _navigateToForm(BuildContext context) {
-    // Se implementará en el Paso 10.
+  Future<void> _navigateToForm(BuildContext context) async {
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const TaskFormScreen()),
+    );
+
+    if (changed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tarea creada')),
+      );
+    }
   }
 
-  void _navigateToEdit(BuildContext context, Task task) {
-    // Se implementará en el Paso 10.
+  Future<void> _navigateToEdit(BuildContext context, Task task) async {
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TaskFormScreen(task: task),
+      ),
+    );
+
+    if (changed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tarea actualizada')),
+      );
+    }
   }
 }
