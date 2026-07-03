@@ -18,8 +18,6 @@ El proyecto está diseñado con una arquitectura limpia pero simple, dividida en
 - Inmutabilidad del modelo con `copyWith()`
 - Manejo de errores con excepciones de validación
 
-## Capturas de pantalla
-
 ## Tecnologías
 
 | Tecnología | Propósito |
