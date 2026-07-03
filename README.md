@@ -96,8 +96,9 @@ lib/
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/JoseHidalgo1/prueba-tecnica-supervisa-crud.git
-cd prueba-tecnica-supervisa-crud
+# Ejemplo: reemplazar con la URL de tu repositorio
+git clone https://github.com/tu-usuario/supervisa_task_manager.git
+cd supervisa_task_manager
 
 # Instalar dependencias
 flutter pub get
