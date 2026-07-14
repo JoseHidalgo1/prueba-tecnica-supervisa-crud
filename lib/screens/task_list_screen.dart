@@ -6,6 +6,8 @@ import 'package:supervisa_task_manager/providers/task_provider.dart';
 import 'package:supervisa_task_manager/screens/task_form_screen.dart';
 import 'package:supervisa_task_manager/widgets/task_card.dart';
 
+import 'package:supervisa_task_manager/screens/pokemon_details_screen.dart';
+
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
 
@@ -32,13 +34,23 @@ class _TaskListScreenState extends State<TaskListScreen> {
         title: const Text('Tareas'),
         actions: [
           IconButton(
-            icon: Icon(
-              provider.hasActiveFilters
-                  ? Icons.filter_alt_off
-                  : Icons.filter_alt,
-            ),
-            onPressed: () => _showFilterSheet(context),
+            icon: const Icon(Icons.catching_pokemon),
+            tooltip: 'PokemonAPI',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PokemonDetailsScreen(),
+                ),
+              );
+            },
           ),
+          IconButton(
+            icon: Icon(provider.hasActiveFilters
+                ? Icons.filter_alt_off
+                : Icons.filter_alt),
+            onPressed: () => _showFilterSheet(context),
+          )
         ],
       ),
       body: _buildBody(provider),
